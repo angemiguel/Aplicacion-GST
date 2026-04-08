@@ -1,38 +1,53 @@
 import os
-import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
 
 app = Flask(__name__)
 
-# --- CONFIGURACIÓN PARA ALWAYSDATA ---
-# Usamos mysql+pymysql para asegurar compatibilidad en el servidor
-# Asegúrate de que la contraseña dngr232.. sea la correcta en tu panel MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://pomaraygst:dngr232.@mysql-pomaraygst.alwaysdata.net/pomaraygst_appdatabs'
+# --- CONFIGURACIÓN ---
+# Asegúrate de usar mysql+pymysql para Alwaysdata
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://pomaraygst:dngr232..@mysql-pomaraygst.alwaysdata.net/pomaraygst_appdatabs'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'pomaray_2026_gst') 
+app.config['SECRET_KEY'] = 'pomaray_2026_gst' 
 
 db = SQLAlchemy(app)
 
-# --- MODELOS ---
-# Asegúrate de que los nombres de las columnas coincidan con tu SQL
+# --- MODELO DE DATOS ---
 class Pasante(db.Model):
     __tablename__ = 'pasante'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
-    # Agrega aquí el resto de tus campos según tu tabla SQL
-    # Ejemplo: carrera = db.Column(db.String(100))
+    # Agrega aquí el resto de tus campos (correo, carrera, etc.)
 
-# --- RUTAS ---
+# --- RUTAS DE NAVEGACIÓN ---
+
 @app.route('/')
 def index():
+    # Flask busca index.html dentro de la carpeta /templates
     return render_template('index.html')
 
-# Agrega aquí tus otras rutas (registro, login, etc.)
+@app.route('/registro')
+def registro():
+    # Esta ruta permite que Flask detecte y cargue registro.html
+    return render_template('registro.html')
 
-# --- INICIO DE LA APLICACIÓN ---
+@app.route('/login')
+def login():
+    # Esta ruta permite que Flask detecte y cargue login.html
+    return render_template('login.html')
+
+# --- RUTA PARA PROCESAR EL FORMULARIO (Ejemplo) ---
+@app.route('/guardar_pasante', methods=['POST'])
+def guardar_pasante():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        nuevo_pasante = Pasante(nombre=nombre)
+        db.session.add(nuevo_pasante)
+        db.session.commit()
+        flash('Pasante registrado con éxito')
+        return redirect(url_for('index'))
+
+# --- INICIO ---
 if __name__ == '__main__':
-    # Esto permite que la app use el puerto que Alwaysdata le asigne dinámicamente
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
