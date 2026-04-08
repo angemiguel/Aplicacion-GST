@@ -9,7 +9,7 @@ app = Flask(__name__)
 # --- CONFIGURACIÓN PARA ALWAYSDATA ---
 # Usamos mysql+pymysql para asegurar compatibilidad en el servidor
 # Asegúrate de que la contraseña dngr232.. sea la correcta en tu panel MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://pomaraygst:dngr232..@mysql-pomaraygst.alwaysdata.net/pomaraygst_appdatabs'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://pomaraygst:dngr232.@mysql-pomaraygst.alwaysdata.net/pomaraygst_appdatabs'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'pomaray_2026_gst') 
 
