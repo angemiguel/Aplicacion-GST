@@ -1,4 +1,5 @@
 import requests
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
@@ -6,7 +7,7 @@ from sqlalchemy import func
 app = Flask(__name__)
 
 # CONFIGURACIÓN
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:dangel232@localhost/base_pasantia_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://pomaraygst:TU_CONTRASEÑA@mysql-pomaraygst.alwaysdata.net/pomaraygst_appdatabs'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'pomaray_2026_gst' 
 db = SQLAlchemy(app)
