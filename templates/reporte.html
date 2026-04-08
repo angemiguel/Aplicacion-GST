@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Resumen Ejecutivo de Pasantías</h2>
+    
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white p-4">
+                <h3>{{ total_e }}</h3>
+                <p>Estudiantes Registrados</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white p-4">
+                <h3>{{ horas }}</h3>
+                <p>Horas Totales Acumuladas</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark p-4">
+                <h3>{{ listos }}</h3>
+                <p>Listos para Graduación</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h4>Análisis de Situación</h4>
+        <p class="lead">Este reporte digital sustituye la revisión manual de expedientes físicos, permitiendo una toma de decisiones basada en datos reales.</p>
+        <button class="btn btn-dark" onclick="window.print()">Imprimir Reporte</button>
+    </div>
+</div>
+{% endblock %}

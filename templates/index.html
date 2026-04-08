@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <h2 class="fw-bold">Listado de Pasantes</h2>
+    <form action="/panel" method="GET" class="d-flex">
+        <input class="form-control me-2" type="search" name="search" placeholder="Buscar pasante...">
+        <button class="btn btn-primary" type="submit">Buscar</button>
+    </form>
+</div>
+
+<div class="row">
+    {% for estudiante in estudiantes %}
+    <div class="col-md-4 mb-4 animate__animated animate__fadeInUp">
+        <div class="card h-100 border-0">
+            <img src="{{ estudiante.dir_foto }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="fw-bold text-primary">{{ estudiante.nombre }}</h5>
+                <p class="small text-muted mb-3">Empresa: {{ estudiante.empresa }}</p>
+                <div class="progress mb-2">
+                    <div class="progress-bar" style="width: {{ (estudiante.horas_completadas / 360) * 100 }}%"></div>
+                </div>
+                <p class="text-center small mb-4">{{ estudiante.horas_completadas }} / 360 h</p>
+                <div class="d-flex gap-2">
+                        <a href="{{ url_for('editar', id=estudiante.id) }}" class="btn btn-outline-primary btn-sm w-100">Editar</a>
+                        <a href="/eliminar/{{ estudiante.id }}" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('¿Eliminar?')">Borrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}  

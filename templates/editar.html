@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow p-4">
+            <h2 class="text-center mb-4">Registrar Nuevo Pasante</h2>
+            <form action="/editar/{{ p.id }}" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" name="nombre" value="{{ p.nombre }}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Empresa Receptora</label>
+                    <input type="text" name="empresa" value="{{ p.empresa }}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Horas Iniciales</label>
+                    <input type="number" name="horas" value="{{ p.horas_completadas }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Foto del Estudiante (Opcional)</label>
+                    <input type="file" name="foto" class="form-control" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Guardar en Sistema</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
