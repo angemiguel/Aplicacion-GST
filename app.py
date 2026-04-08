@@ -7,7 +7,7 @@ from sqlalchemy import func
 app = Flask(__name__)
 
 # CONFIGURACIÓN
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://pomaraygst:TU_CONTRASEÑA@mysql-pomaraygst.alwaysdata.net/pomaraygst_appdatabs'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://pomaraygst:dngr232.@mysql-pomaraygst.alwaysdata.net/pomaraygst_appdatabs'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'pomaray_2026_gst' 
 db = SQLAlchemy(app)
