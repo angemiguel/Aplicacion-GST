@@ -8,7 +8,7 @@ app = Flask(__name__)
 # CONFIGURACIÓN
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:dangel232@localhost/base_pasantia_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'pomaray_2026_gst' 
+app.config['SECRET_KEY'] = 'pomaray_2026_gst'
 db = SQLAlchemy(app)
 
 IMGBB_API_KEY = "0e6901cb0c02a5f295b89eff4e86a61e"
