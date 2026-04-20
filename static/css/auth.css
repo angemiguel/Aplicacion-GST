@@ -1,0 +1,46 @@
+/* --- ESTILOS ESPECÍFICOS PARA LOGIN Y CREAR USUARIO --- */
+
+.auth-wrapper {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid rgba(0,0,0,0.02);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.auth-card h2 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.auth-card .form-label {
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.auth-footer-text {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.auth-footer-text a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+}

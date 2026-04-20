@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card animate__animated animate__fadeInUp">
+        <h2>Iniciar Sesión</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <input type="text" name="username" class="form-control" placeholder="Ingresa tu usuario" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Entrar al Sistema</button>
+        </form>
+        <div class="auth-footer-text">
+            ¿No tienes una cuenta? <a href="{{ url_for('crear_usuario') }}">Regístrate aquí</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-5">
     <h2 class="fw-bold">Listado de Pasantes</h2>
-    <form action="/panel" method="GET" class="d-flex">
+    <form action="{{ url_for('index') }}" method="GET" class="d-flex">
         <input class="form-control me-2" type="search" name="search" placeholder="Buscar pasante...">
         <button class="btn btn-primary" type="submit">Buscar</button>
     </form>
@@ -23,7 +23,7 @@
                 <p class="text-center small mb-4">{{ estudiante.horas_completadas }} / 360 h</p>
                 <div class="d-flex gap-2">
                         <a href="{{ url_for('editar', id=estudiante.id) }}" class="btn btn-outline-primary btn-sm w-100">Editar</a>
-                        <a href="/eliminar/{{ estudiante.id }}" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('¿Eliminar?')">Borrar</a>
+                        <a href="{{ url_for('eliminar', id=estudiante.id) }}" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('¿Eliminar?')">Borrar</a>
                 </div>
             </div>
         </div>
