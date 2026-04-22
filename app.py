@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, mak
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash # Seguridad avanzada
+from werkzeug.security import generate_password_hash, check_password_hash 
 
 app = Flask(__name__)
 
@@ -40,6 +40,7 @@ class Pasante(db.Model):
     empresa = db.Column(db.String(100), nullable=False)
     horas_completadas = db.Column(db.Integer, default=0)
     estado = db.Column(db.String(20), default='Activo')
+    descripcion = db.Column(db.String(255))
     dir_foto = db.Column(db.String(500))
 
 @login_manager.user_loader
@@ -142,6 +143,7 @@ def registrar():
             nombre=request.form.get('nombre'),
             empresa=request.form.get('empresa'),
             horas_completadas=int(request.form.get('horas') or 0),
+            descripcion=request.form.get('descripcion'),
             dir_foto=url_foto
         )
         db.session.add(nuevo)
@@ -157,6 +159,7 @@ def editar(id):
         p.nombre = request.form.get('nombre')
         p.empresa = request.form.get('empresa')
         p.horas_completadas = int(request.form.get('horas') or 0)
+        p.descripcion = request.form.get('descripcion')
         nueva_foto = request.files.get('foto')
         if nueva_foto and nueva_foto.filename != '':
             res = subir_a_imgbb(nueva_foto)

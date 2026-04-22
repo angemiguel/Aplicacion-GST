@@ -4,25 +4,32 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow p-4">
-            <h2 class="text-center mb-4">Registrar Nuevo Pasante</h2>
-            <form action="/editar/{{ p.id }}" method="POST" enctype="multipart/form-data">
+            <h2 class="text-center mb-4">Editar Pasante</h2>
+            <form action="{{ url_for('editar', id=p.id) }}" method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label">Nombre Completo</label>
-                    <input type="text" name="nombre" value="{{ p.nombre }}" class="form-control" required>
+                    <input type="text" name="nombre" class="form-control" value="{{ p.nombre }}" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Empresa Receptora</label>
-                    <input type="text" name="empresa" value="{{ p.empresa }}" class="form-control" required>
+                    <input type="text" name="empresa" class="form-control" value="{{ p.empresa }}" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Horas Iniciales</label>
-                    <input type="number" name="horas" value="{{ p.horas_completadas }}" class="form-control">
+                    <label class="form-label">Horas Completadas</label>
+                    <input type="number" name="horas" class="form-control" value="{{ p.horas_completadas }}">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Foto del Estudiante (Opcional)</label>
+                    <label class="form-label">Descripción</label>
+                    <textarea name="descripcion" class="form-control" rows="2" placeholder="Breve nota sobre el pasante...">{{ p.descripcion }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cambiar Foto (Opcional)</label>
                     <input type="file" name="foto" class="form-control" accept="image/*">
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Guardar en Sistema</button>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary w-100">Cancelar</a>
+                </div>
             </form>
         </div>
     </div>

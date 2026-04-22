@@ -28,6 +28,7 @@ CREATE TABLE `pasante` (
   `nombre` varchar(100) NOT NULL,
   `empresa` varchar(100) NOT NULL,
   `horas_completadas` int(11) DEFAULT NULL,
+  `descripcion` varchar(255) DEFAULT NULL,
   `estado` varchar(20) DEFAULT NULL,
   `dir_foto` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)

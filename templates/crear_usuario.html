@@ -8,7 +8,10 @@
 <div class="auth-wrapper">
     <div class="auth-card animate__animated animate__fadeInUp">
         <h2>Crear Cuenta</h2>
-        <form method="POST">
+3        <form method="POST">
+        <div id="auth-alert" class="alert d-none"></div>
+
+        <form id="register-form">
             <div class="mb-3">
                 <label class="form-label">Nombre de Usuario</label>
                 <input type="text" name="username" class="form-control" placeholder="Ej: admin_pasantia" required>
@@ -16,12 +19,59 @@
             <div class="mb-3">
                 <label class="form-label">Contraseña</label>
                 <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                <div class="password-group">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                    <button type="button" class="toggle-password" onclick="togglePass('password')">VER</button>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary w-100">Registrar Usuario</button>
+            <button type="submit" id="submit-btn" class="btn btn-primary w-100">Registrar Usuario</button>
         </form>
         <div class="auth-footer-text">
             ¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión</a>
         </div>
     </div>
 </div>
+
+<script>
+function togglePass(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const alert = document.getElementById('auth-alert');
+    const formData = new FormData(e.target);
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Creando cuenta...';
+
+    try {
+        const response = await fetch("{{ url_for('crear_usuario') }}", {
+            method: 'POST',
+            body: JSON.stringify(Object.fromEntries(formData)),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        if (response.ok) {
+            alert.className = 'alert alert-success';
+            alert.textContent = result.message + " Redirigiendo...";
+            alert.classList.remove('d-none');
+            setTimeout(() => window.location.href = result.redirect, 1500);
+        } else {
+            alert.className = 'alert alert-danger animate__animated animate__shakeX';
+            alert.textContent = result.message;
+            alert.classList.remove('d-none');
+            btn.disabled = false;
+            btn.innerHTML = 'Registrar Usuario';
+        }
+    } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = 'Registrar Usuario';
+    }
+});
+</script>
 {% endblock %}

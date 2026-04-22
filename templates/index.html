@@ -17,6 +17,7 @@
             <div class="card-body">
                 <h5 class="fw-bold text-primary">{{ estudiante.nombre }}</h5>
                 <p class="small text-muted mb-3">Empresa: {{ estudiante.empresa }}</p>
+                <p class="card-text small text-secondary" style="height: 2.5em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ estudiante.descripcion or 'Sin descripción' }}</p>
                 <div class="progress mb-2">
                     <div class="progress-bar" style="width: {{ (estudiante.horas_completadas / 360) * 100 }}%"></div>
                 </div>
