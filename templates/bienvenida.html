@@ -1,19 +1,102 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row align-items-center animate__animated animate__fadeIn">
-    <div class="col-md-6">
-        <h1 class="display-4 fw-bold mb-4">Sistema de <span class="text-primary">Gestión de Pasantías</span></h1>
-        <p class="lead text-muted mb-5">Digitalización de procesos académicos para el Politécnico Pomaray.</p>
-        <a href="/panel" class="btn btn-primary btn-lg px-5 shadow">Comenzar Ahora</a>
+<div class="row align-items-center min-vh-75 animate__animated animate__fadeIn mb-5">
+    <div class="col-lg-6 mb-5 mb-lg-0">
+        <h1 class="display-3 fw-bold mb-4 hero-title animate__animated animate__fadeInLeft">
+            Bienvenido, <span class="text-primary">{{ current_user.username }}</span>
+        </h1>
+        <p class="lead text-secondary mb-5 pe-lg-5 animate__animated animate__fadeInLeft" style="animation-delay: 0.2s">
+            Estás en el centro de control del <b>Politécnico Pomaray</b>. Gestiona el progreso de las pasantías de forma eficiente y profesional.
+        </p>
+        <div class="mt-4 d-flex align-items-center text-muted animate__animated animate__fadeIn" style="animation-delay: 0.6s">
+            <div class="d-flex me-4">
+                <i class="bi bi-person-circle text-primary fs-4 me-2"></i>
+                <span>Rol: <b>{{ current_user.rol|capitalize }}</b></span>
+            </div>
+            <div class="d-flex">
+                <i class="bi bi-calendar-check text-success fs-4 me-2"></i>
+                <span>{{ datetime.now().strftime('%d de %B, %Y') }}</span>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6">
-        <div class="video-card animate__animated animate__zoomIn">
-            <video src="/static/video/tetorial.mp4" height="418" width="600" controls>
-                <source src="{{ url_for('static', filename='/static/video/tetorial.mp4') }}" type="video/mp4">
-            </video>
-            <p class="text-center mt-3 mb-0 small text-muted">Video Tutorial del Sistema</p>
+    <div class="col-lg-6">
+        <div class="video-card animate__animated animate__zoomIn shadow-2xl" style="animation-delay: 0.3s">
+            <div class="bg-dark p-2 rounded-4">
+                <video controls poster="https://via.placeholder.com/600x400/0f172a/ffffff?text=Video+Tutorial">
+                    <source src="{{ url_for('static', filename='video/tetorial.mp4') }}" type="video/mp4">
+                    Tu navegador no soporta el video.
+                </video>
+            </div>
         </div>
     </div>
 </div>
+
+<h4 class="fw-bold mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.5s">Acceso Rápido a Secciones</h4>
+
+<div class="row g-4 mb-5 animate__animated animate__fadeInUp" style="animation-delay: 0.7s">
+    <div class="col-md-4">
+        <a href="{{ url_for('index') }}" class="text-decoration-none h-100 d-block">
+            <div class="card h-100 border-0 shadow-sm hover-dashboard-card p-4 text-center">
+                <div class="bg-primary-subtle rounded-circle p-3 mx-auto mb-3" style="width: 70px; height: 70px;">
+                    <i class="bi bi-people-fill text-primary fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Gestión de Pasantes</h5>
+                <p class="text-muted small mb-0">Ver listado completo, buscar y supervisar horas completadas.</p>
+            </div>
+        </a>
+    </div>
+    
+    {% if current_user.rol in ['admin', 'docente'] %}
+    <div class="col-md-4">
+        <a href="{{ url_for('reporte') }}" class="text-decoration-none h-100 d-block">
+            <div class="card h-100 border-0 shadow-sm hover-dashboard-card p-4 text-center">
+                <div class="bg-success-subtle rounded-circle p-3 mx-auto mb-3" style="width: 70px; height: 70px;">
+                    <i class="bi bi-graph-up-arrow text-success fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Análisis de Datos</h5>
+                <p class="text-muted small mb-0">Visualizar estadísticas generales y listado de graduación.</p>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+
+    {% if current_user.rol == 'admin' %}
+    <div class="col-md-4">
+        <a href="{{ url_for('reportes_externos') }}" class="text-decoration-none h-100 d-block">
+            <div class="card h-100 border-0 shadow-sm hover-dashboard-card p-4 text-center">
+                <div class="bg-danger-subtle rounded-circle p-3 mx-auto mb-3" style="width: 70px; height: 70px;">
+                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Documentación</h5>
+                <p class="text-muted small mb-0">Subir y gestionar archivos PDF de reportes externos.</p>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+    
+    {% if current_user.rol != 'admin' %}
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 text-center" data-bs-toggle="modal" data-bs-target="#modalReporte" style="cursor: pointer;">
+            <div class="bg-info-subtle rounded-circle p-3 mx-auto mb-3" style="width: 70px; height: 70px;">
+                <i class="bi bi-chat-left-dots-fill text-info fs-2"></i>
+            </div>
+            <h5 class="fw-bold text-dark">Enviar Reporte</h5>
+            <p class="text-muted small mb-0">Notificar directamente al administrador sobre cualquier situación.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.hover-dashboard-card {
+    transition: all 0.3s ease !important;
+    border-radius: 24px !important;
+}
+.hover-dashboard-card:hover {
+    transform: translateY(-10px);
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1) !important;
+}
+</style>
 {% endblock %}

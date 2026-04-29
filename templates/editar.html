@@ -23,6 +23,10 @@
                     <textarea name="descripcion" class="form-control" rows="2" placeholder="Breve nota sobre el pasante...">{{ p.descripcion }}</textarea>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">Ubicación (Google Maps)</label>
+                    <input type="text" name="mapa_url" class="form-control" value="{{ p.mapa_url or '' }}" placeholder="Enlace o iframe del mapa">
+                </div>
+                <div class="mb-3">
                     <label class="form-label">Cambiar Foto (Opcional)</label>
                     <input type="file" name="foto" class="form-control" accept="image/*">
                 </div>
