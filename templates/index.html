@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-5 animate__animated animate__fadeIn">
+<div class="row mb-5">
     <div class="col-lg-6">
         <h2 class="fw-bold mb-0">Listado de Pasantes</h2>
         <p class="text-muted">Gestiona y supervisa el progreso de los estudiantes en sus pasantías.</p>
@@ -32,7 +32,7 @@
 <div class="row">
     {% if estudiantes %}
         {% for estudiante in estudiantes %}
-        <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        <div class="col-md-6 col-lg-4 mb-4">
             <div class="card h-100">
                 <div class="position-relative">
                     <img src="{{ estudiante.dir_foto }}" class="card-img-top" alt="{{ estudiante.nombre }}">
@@ -51,7 +51,7 @@
                             <i class="bi bi-calendar-plus me-1"></i>{{ estudiante.fecha_creacion.strftime('%d/%m/%Y') }}
                         </small>
                     </div>
-                    <p class="text-muted small mb-3"><i class="bi bi-building me-1"></i> {{ estudiante.empresa }}</p>
+                    <p class="text-muted small mb-3"><i class="bi bi-building me-1"></i> {{ estudiante.empresa_rel.nombre }}</p>
                     
                     <p class="card-text text-secondary mb-4 flex-grow-1" style="font-size: 0.9rem;">
                         {{ estudiante.descripcion[:100] }}{% if estudiante.descripcion|length > 100 %}...{% endif %}
@@ -72,9 +72,11 @@
                         <a href="{{ url_for('editar', id=estudiante.id) }}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
                             <i class="bi bi-pencil-square me-1"></i> Editar
                         </a>
-                        <a href="{{ url_for('eliminar', id=estudiante.id) }}" class="btn btn-outline-danger btn-sm w-100 rounded-pill" onclick="return confirm('¿Estás seguro de eliminar este registro?')">
-                            <i class="bi bi-trash3 me-1"></i> Borrar
-                        </a>
+                        <form action="{{ url_for('eliminar', id=estudiante.id) }}" method="POST" class="w-100" onsubmit="return confirm('¿Estás seguro de eliminar este registro?')">
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100 rounded-pill">
+                                <i class="bi bi-trash3 me-1"></i> Borrar
+                            </button>
+                        </form>
                     </div>
                     {% endif %}
                     
@@ -102,7 +104,7 @@
         </div>
         {% endfor %}
     {% else %}
-        <div class="col-12 text-center py-5 animate__animated animate__fadeIn">
+        <div class="col-12 text-center py-5">
             <div class="bg-white p-5 rounded-4 shadow-sm">
                 <i class="bi bi-person-exclamation display-1 text-muted"></i>
                 <h4 class="mt-4 text-secondary">No se encontraron resultados</h4>

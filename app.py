@@ -1,29 +1,30 @@
 import os
+import re
+from datetime import datetime
+from functools import wraps
 import requests
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect, url_for, flash, make_response, jsonify, send_from_directory
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, render_template, request, redirect, url_for, flash, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, or_
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash 
 
 app = Flask(__name__)
 
-# --- CONFIGURACIÓN ---
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:dangel232@localhost/base_pasantia_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'mysql://root:dangel232@localhost/base_pasantia_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'pomaray_2026_gst'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'pomaray_2026_gst')
 app.config['UPLOAD_FOLDER_PDF'] = os.path.join('static', 'uploads', 'reportes')
 db = SQLAlchemy(app)
 
-# Asegurar que la carpeta de reportes exista
 os.makedirs(app.config['UPLOAD_FOLDER_PDF'], exist_ok=True)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-IMGBB_API_KEY = "0e6901cb0c02a5f295b89eff4e86a61e"
+IMGBB_API_KEY = os.environ.get('IMGBB_API_KEY', "0e6901cb0c02a5f295b89eff4e86a61e")
 
 # --- MEJORA: Control de Navegación (Evita volver atrás) ---
 @app.after_request
@@ -38,11 +39,6 @@ def add_header(response):
 def inject_now():
     return {'datetime': datetime}
 
-from functools import wraps
-
-# ... (configuración previa)
-
-# --- MEJORA: Control de Roles ---
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -52,33 +48,38 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-from datetime import datetime
-
-# --- MODELOS DE DATOS ---
+# --- MODELOS ---
 class Usuario(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password = db.Column(db.String(255), nullable=False)
-    rol = db.Column(db.String(20), default='estudiante') # admin, docente, estudiante
+    rol = db.Column(db.String(20), default='estudiante')
     notificaciones_enviadas = db.relationship('Notificacion', backref='remitente', lazy=True)
+
+class Empresa(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    direccion = db.Column(db.String(255))
+    telefono = db.Column(db.String(30))
+    pasantes = db.relationship('Pasante', backref='empresa_rel', lazy=True)
 
 class Notificacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mensaje = db.Column(db.Text, nullable=False)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow)
-    leida = db.Column(db.Boolean, default=False)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    leida = db.Column(db.Boolean, default=False, index=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False, index=True)
 
 class ReporteExterno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(255), nullable=False)
     nombre_archivo = db.Column(db.String(255), nullable=False)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
 class Pasante(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    empresa = db.Column(db.String(100), nullable=False)
+    nombre = db.Column(db.String(100), nullable=False, index=True)
+    empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False, index=True)
     horas_completadas = db.Column(db.Integer, default=0)
     estado = db.Column(db.String(20), default='Activo')
     descripcion = db.Column(db.String(255))
@@ -95,7 +96,7 @@ with app.app_context():
     db.create_all()
     # Crear admin por defecto con rol admin si no existe
     if not Usuario.query.filter_by(username='admin').first():
-        hashed_pw = generate_password_hash('123')
+        hashed_pw = generate_password_hash(os.environ.get('DEFAULT_ADMIN_PASSWORD', '123'))
         db.session.add(Usuario(username='admin', password=hashed_pw, rol='admin'))
         db.session.commit()
 
@@ -133,10 +134,17 @@ def crear_usuario():
         u = request.form.get('username')
         p = request.form.get('password')
         r = request.form.get('rol', 'estudiante')
+        if not current_user.is_authenticated or current_user.rol != 'admin':
+            r = 'estudiante'
+        if not u or not p:
+            flash('Todos los campos son obligatorios.', 'danger')
+            return redirect(url_for('crear_usuario'))
+        if len(p) < 4:
+            flash('La contraseña debe tener al menos 4 caracteres.', 'danger')
+            return redirect(url_for('crear_usuario'))
         if Usuario.query.filter_by(username=u).first():
             flash('Este usuario ya existe.', 'danger')
             return redirect(url_for('crear_usuario'))
-            
         hashed_pw = generate_password_hash(p)
         db.session.add(Usuario(username=u, password=hashed_pw, rol=r))
         db.session.commit()
@@ -168,10 +176,10 @@ def bienvenida():
 def index():
     search = request.args.get('search', '')
     if search:
-        estudiantes = Pasante.query.filter(
+        estudiantes = Pasante.query.join(Empresa).filter(
             or_(
                 Pasante.nombre.contains(search),
-                Pasante.empresa.contains(search),
+                Empresa.nombre.contains(search),
                 Pasante.descripcion.contains(search)
             )
         ).all()
@@ -192,13 +200,19 @@ def registrar():
 
         m_url = request.form.get('mapa_url')
         if m_url and '<iframe' in m_url:
-            import re
             match = re.search(r'src="([^"]+)"', m_url)
             if match: m_url = match.group(1)
 
+        emp_nombre = request.form.get('empresa')
+        empresa = Empresa.query.filter_by(nombre=emp_nombre).first()
+        if not empresa:
+            empresa = Empresa(nombre=emp_nombre)
+            db.session.add(empresa)
+            db.session.flush()
+
         nuevo = Pasante(
             nombre=request.form.get('nombre'),
-            empresa=request.form.get('empresa'),
+            empresa_id=empresa.id,
             horas_completadas=int(request.form.get('horas') or 0),
             descripcion=request.form.get('descripcion'),
             dir_foto=url_foto,
@@ -207,7 +221,8 @@ def registrar():
         db.session.add(nuevo)
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template('registro.html')
+    empresas = Empresa.query.order_by(Empresa.nombre).all()
+    return render_template('registro.html', empresas=empresas)
 
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -216,13 +231,18 @@ def editar(id):
     p = db.get_or_404(Pasante, id)
     if request.method == 'POST':
         p.nombre = request.form.get('nombre')
-        p.empresa = request.form.get('empresa')
+        emp_nombre = request.form.get('empresa')
+        empresa = Empresa.query.filter_by(nombre=emp_nombre).first()
+        if not empresa:
+            empresa = Empresa(nombre=emp_nombre)
+            db.session.add(empresa)
+            db.session.flush()
+        p.empresa_id = empresa.id
         p.horas_completadas = int(request.form.get('horas') or 0)
         p.descripcion = request.form.get('descripcion')
         
         m_url = request.form.get('mapa_url')
         if m_url and '<iframe' in m_url:
-            import re
             match = re.search(r'src="([^"]+)"', m_url)
             if match: m_url = match.group(1)
         p.mapa_url = m_url
@@ -233,7 +253,8 @@ def editar(id):
             if res: p.dir_foto = res
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template('editar.html', p=p)
+    empresas = Empresa.query.order_by(Empresa.nombre).all()
+    return render_template('editar.html', p=p, empresas=empresas)
 
 @app.route('/reporte')
 @login_required
@@ -246,10 +267,6 @@ def reporte():
     suma = db.session.query(func.sum(Pasante.horas_completadas)).scalar() or 0
     listos = Pasante.query.filter(Pasante.horas_completadas >= 360).count()
     return render_template('reporte.html', total_e=total, horas=suma, listos=listos)
-
-from flask import Flask, render_template, request, redirect, url_for, flash, make_response, jsonify
-
-# ... (otras rutas)
 
 @app.route('/enviar_notificacion', methods=['POST'])
 @login_required
@@ -307,7 +324,7 @@ def subir_reporte_pdf():
     archivo = request.files.get('archivo')
     titulo = request.form.get('titulo')
     
-    if archivo and archivo.filename.endswith('.pdf'):
+    if archivo and archivo.filename.lower().endswith('.pdf'):
         filename = secure_filename(archivo.filename)
         # Añadir timestamp para evitar colisiones
         unique_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
@@ -338,7 +355,7 @@ def eliminar_reporte_pdf(id):
         flash(f'Error al eliminar: {e}', 'danger')
     return redirect(url_for('reportes_externos'))
 
-@app.route('/eliminar/<int:id>')
+@app.route('/eliminar/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def eliminar(id):
@@ -346,6 +363,9 @@ def eliminar(id):
     if p:
         db.session.delete(p)
         db.session.commit()
+        flash('Pasante eliminado correctamente.', 'success')
+    else:
+        flash('El pasante no existe.', 'danger')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

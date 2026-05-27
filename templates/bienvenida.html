@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row align-items-center min-vh-75 animate__animated animate__fadeIn mb-5">
+<div class="row align-items-center min-vh-75 mb-5">
     <div class="col-lg-6 mb-5 mb-lg-0">
-        <h1 class="display-3 fw-bold mb-4 hero-title animate__animated animate__fadeInLeft">
+        <h1 class="display-3 fw-bold mb-4 hero-title">
             Bienvenido, <span class="text-primary">{{ current_user.username }}</span>
         </h1>
-        <p class="lead text-secondary mb-5 pe-lg-5 animate__animated animate__fadeInLeft" style="animation-delay: 0.2s">
+        <p class="lead text-secondary mb-5 pe-lg-5">
             Estás en el centro de control del <b>Politécnico Pomaray</b>. Gestiona el progreso de las pasantías de forma eficiente y profesional.
         </p>
-        <div class="mt-4 d-flex align-items-center text-muted animate__animated animate__fadeIn" style="animation-delay: 0.6s">
+        <div class="mt-4 d-flex align-items-center text-muted">
             <div class="d-flex me-4">
                 <i class="bi bi-person-circle text-primary fs-4 me-2"></i>
                 <span>Rol: <b>{{ current_user.rol|capitalize }}</b></span>
@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="col-lg-6">
-        <div class="video-card animate__animated animate__zoomIn shadow-2xl" style="animation-delay: 0.3s">
+        <div class="video-card shadow-2xl">
             <div class="bg-dark p-2 rounded-4">
                 <video controls poster="https://via.placeholder.com/600x400/0f172a/ffffff?text=Video+Tutorial">
                     <source src="{{ url_for('static', filename='video/tetorial.mp4') }}" type="video/mp4">
@@ -32,9 +32,9 @@
     </div>
 </div>
 
-<h4 class="fw-bold mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.5s">Acceso Rápido a Secciones</h4>
+<h4 class="fw-bold mb-4">Acceso Rápido a Secciones</h4>
 
-<div class="row g-4 mb-5 animate__animated animate__fadeInUp" style="animation-delay: 0.7s">
+<div class="row g-4 mb-5">
     <div class="col-md-4">
         <a href="{{ url_for('index') }}" class="text-decoration-none h-100 d-block">
             <div class="card h-100 border-0 shadow-sm hover-dashboard-card p-4 text-center">

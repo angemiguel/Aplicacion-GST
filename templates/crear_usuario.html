@@ -6,34 +6,36 @@
 
 {% block content %}
 <div class="auth-wrapper">
-    <div class="auth-card animate__animated animate__fadeInUp">
+    <div class="auth-card">
         <h2 class="text-center mb-4">Crear Cuenta</h2>
         
-        <form method="POST" action="{{ url_for('crear_usuario') }}">
-            <div class="mb-3">
-                <label class="form-label">Nombre de Usuario</label>
-                <input type="text" name="username" class="form-control" placeholder="Ej: admin_pasantia" required>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label">Contraseña</label>
-                <div class="input-group">
-                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
-                    <button class="btn btn-outline-secondary" type="button" onclick="togglePass('password')">Ver</button>
+            <form method="POST" action="{{ url_for('crear_usuario') }}">
+                <div class="mb-3">
+                    <label class="form-label">Nombre de Usuario</label>
+                    <input type="text" name="username" class="form-control" placeholder="Ej: juan_perez" required>
                 </div>
-            </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Contraseña</label>
+                    <div class="input-group">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePass('password')">Ver</button>
+                    </div>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Rol de Usuario</label>
-                <select name="rol" class="form-select" required>
-                    <option value="estudiante">Estudiante (Solo lectura)</option>
-                    <option value="docente">Docente (Lectura + Reportes)</option>
-                    <option value="admin">Administrador (Control Total)</option>
-                </select>
-            </div>
+                {% if current_user.is_authenticated and current_user.rol == 'admin' %}
+                <div class="mb-3">
+                    <label class="form-label">Rol de Usuario</label>
+                    <select name="rol" class="form-select" required>
+                        <option value="estudiante">Estudiante (Solo lectura)</option>
+                        <option value="docente">Docente (Lectura + Reportes)</option>
+                        <option value="admin">Administrador (Control Total)</option>
+                    </select>
+                </div>
+                {% endif %}
 
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Registrar Usuario</button>
-        </form>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Registrarse</button>
+            </form>
         
         <div class="auth-footer-text mt-3 text-center">
             ¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión</a>
